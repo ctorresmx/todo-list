@@ -1,4 +1,5 @@
 use clap::{Parser, Subcommand};
+use todo_list::model::{Status, Todo};
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -39,7 +40,12 @@ fn list(completed: bool, pending: bool) {
 }
 
 fn add(item: String) {
-    println!("Running Add command with item '{}'", item)
+    let new_item = Todo {
+        id: 1,
+        content: item,
+        status: Status::Pending,
+    };
+    println!("Running Add command with item '{:?}'", new_item)
 }
 
 fn remove(id: i64) {

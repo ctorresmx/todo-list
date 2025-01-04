@@ -1,5 +1,6 @@
 use clap::{Parser, Subcommand};
 use todo_list::model::{Status, Todo};
+use todo_list::persistance;
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -32,24 +33,53 @@ enum Commands {
     Clean,
 }
 
+fn next_available_id(ids: &Vec<i64>) -> i64 {
+    let mut sorted_ids = ids.clone();
+    sorted_ids.sort();
+
+    if ids.is_empty() {
+        return 1;
+    }
+
+    let mut next_id = 1;
+
+    for &id in ids.iter() {
+        if id > next_id {
+            return next_id;
+        }
+        next_id = id + 1;
+    }
+
+    next_id
+}
+
 fn list(completed: bool, pending: bool) {
     println!(
         "Running List command for completed '{}' and pending '{}' filters.",
         completed, pending
-    )
+    );
+    let todos = persistance::read();
+    println!("Todos: '{:?}'", todos)
 }
 
 fn add(item: String) {
+    let mut todos: Vec<Todo> = persistance::read();
+    let ids: Vec<i64> = todos.iter().map(|todo| todo.id).collect();
+    let id = next_available_id(&ids);
+
     let new_item = Todo {
-        id: 1,
+        id,
         content: item,
         status: Status::Pending,
     };
-    println!("Running Add command with item '{:?}'", new_item)
+    todos.push(new_item);
+    persistance::write(todos);
 }
 
 fn remove(id: i64) {
-    println!("Running Remove command for item '{}'", id)
+    let todos = persistance::read();
+    let new_todos = todos.into_iter().filter(|todo| todo.id != id).collect();
+    persistance::write(new_todos);
 }
 
 fn complete(id: i64) {
@@ -57,7 +87,7 @@ fn complete(id: i64) {
 }
 
 fn clean() {
-    println!("Running Clean command.")
+    persistance::write(vec![]);
 }
 
 fn main() {

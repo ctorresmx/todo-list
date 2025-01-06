@@ -83,7 +83,24 @@ fn remove(id: i64) {
 }
 
 fn complete(id: i64) {
-    println!("Running Complete command for item '{}'", id)
+    let todos = persistance::read();
+
+    let new_todos = todos
+        .into_iter()
+        .map(|todo| {
+            if todo.id == id {
+                Todo {
+                    id: todo.id,
+                    content: todo.content.clone(),
+                    status: Status::Completed,
+                }
+            } else {
+                todo
+            }
+        })
+        .collect();
+
+    persistance::write(new_todos);
 }
 
 fn clean() {

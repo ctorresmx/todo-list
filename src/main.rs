@@ -54,12 +54,33 @@ fn next_available_id(ids: &Vec<i64>) -> i64 {
 }
 
 fn list(completed: bool, pending: bool) {
-    println!(
-        "Running List command for completed '{}' and pending '{}' filters.",
-        completed, pending
-    );
-    let todos = persistance::read();
-    println!("Todos: '{:?}'", todos)
+    let todos = persistance::read()
+        .into_iter()
+        .filter(|todo| {
+            if !completed {
+                return true;
+            }
+
+            match todo.status {
+                Status::Completed => true,
+                _ => false,
+            }
+        })
+        .filter(|todo| {
+            if !pending {
+                return true;
+            }
+
+            match todo.status {
+                Status::Pending => true,
+                _ => false,
+            }
+        });
+
+    println!("id\tdescription\tstatus");
+    for todo in todos {
+        println!("{:?}\t{:?}\t{:?}", todo.id, todo.content, todo.status)
+    }
 }
 
 fn add(item: String) {

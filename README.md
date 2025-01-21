@@ -4,6 +4,8 @@ A small app to practice and get more familiar with Rust.
 For now, each command performs a different action. Therefore you will
 need to run a different command to add, list, remove, etc.
 
+The list will be saved in the `$HOME` directory with the name `.todo-list`
+
 ## How to run it
 
 The app has basic actions like:

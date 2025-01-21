@@ -95,12 +95,16 @@ fn add(item: String) {
     };
     todos.push(new_item);
     persistance::write(todos);
+
+    list(false, false);
 }
 
 fn remove(id: i64) {
     let todos = persistance::read();
     let new_todos = todos.into_iter().filter(|todo| todo.id != id).collect();
     persistance::write(new_todos);
+
+    list(false, false);
 }
 
 fn complete(id: i64) {
@@ -122,6 +126,8 @@ fn complete(id: i64) {
         .collect();
 
     persistance::write(new_todos);
+
+    list(false, false);
 }
 
 fn clean() {

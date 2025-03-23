@@ -1,6 +1,7 @@
 use clap::{Parser, Subcommand};
 use todo_list::model::{Status, Todo};
 use todo_list::persistance;
+use todo_list::tui;
 
 #[derive(Parser)]
 #[command(version, about, long_about = None)]
@@ -11,6 +12,7 @@ struct Args {
 
 #[derive(Subcommand, Debug)]
 enum Commands {
+    Tui,
     List {
         #[arg(short, long, default_value_t = false, conflicts_with = "pending")]
         completed: bool,
@@ -138,6 +140,7 @@ fn main() {
     let args = Args::parse();
 
     match args.command {
+        Commands::Tui => tui::tui(),
         Commands::List { completed, pending } => list(completed, pending),
         Commands::Add { item } => add(item),
         Commands::Remove { id } => remove(id),
